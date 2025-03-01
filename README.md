@@ -17,3 +17,16 @@ Add a README file to your repository that includes:
 An architecture diagram of your application.
 A detailed explanation of the steps executed in your CI/CD pipeline.
 Instructions on how to test and verify the application.
+
+Architecture: 
+
+Infrastructure: 
+
+VPC—IGW---Subnets——Routetable—Subnetassociation——security-group—ECR deployment in this VPC  am creating by using vpc module.
+
+
+IAM roles— Assumerolewithwebidentity—for gitlab to aws authentication
+
+IAM roles to fetch the image from ECR
+
+CICD—stages—cloning the repo—authenticate to ECR—aws login with assume role with web identiy---build the image and push it ECR—deploy to ECS
