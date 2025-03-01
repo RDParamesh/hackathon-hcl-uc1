@@ -29,4 +29,6 @@ IAM roles— Assumerolewithwebidentity—for gitlab to aws authentication
 
 IAM roles to fetch the image from ECR
 
+Docker file need to write
+
 CICD—stages—cloning the repo—authenticate to ECR—aws login with assume role with web identiy---build the image and push it ECR—deploy to ECS
