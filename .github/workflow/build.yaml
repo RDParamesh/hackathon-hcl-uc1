@@ -1,34 +1,42 @@
-name: Build and Push Docker Images to ECR
+name: Deploy to AWS ECS
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 permissions:
+  id-token: write
   contents: read
-  id-token: write  
 
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    # Set up Docker Buildx
-    - name: Set up Docker Buildx
-      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::539935451710:role/GitHubActionsRole
+          role-session-name: GitHubActions
+          aws-region: us-west-2
 
-    - name: configure aws credentials
-     
+      - name: Login to Amazon ECR
+        run: aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin ${{ secrets.ECR_REPO }}
 
-    # Log in to Amazon ECR
-    - name: Log in to Amazon ECR
-      
+      - name: Build and tag Docker image
+        run: |
+          docker build -t my-app:latest .
+          docker tag my-app:latest ${{ secrets.ECR_REPO }}/my-app:latest
 
-    # Build, tag, and push Docker image for Hello World Service
-    - name: Build, Tag & Push Docker Image for Hello World Service
-      
-    - name: Cleanup local Docker images
+      - name: Push Docker image to ECR
+        run: docker push ${{ secrets.ECR_REPO }}/my-app:latest
+
+      - name: Deploy to ECS
+        run: |
+          aws ecs update-service --cluster paramesh-cluster --service app-service --force-new-deployment
+
       
         
